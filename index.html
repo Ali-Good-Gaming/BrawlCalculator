@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор стоимости аккаунта Brawl Stars</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: url('images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            animation: fadeInDown 1s ease;
+        }
+        
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 153, 0, 0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #FF6B00, #FFA800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .exchange-container {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            animation: fadeIn 1s ease;
+        }
+        
+        .exchange-rate-box {
+            text-align: center;
+            padding: 15px;
+            min-width: 200px;
+            background: rgba(255, 153, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .exchange-title {
+            font-size: 1.1rem;
+            color: #FF6B00;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .exchange-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .rate-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        #dollar-rate-input {
+            width: 100px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #FF6B00;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        .rate-update {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #777;
+        }
+        
+        .progress-container {
+            max-width: 800px;
+            margin: 30px auto;
+            position: relative;
+            animation: fadeIn 1s ease;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 153, 0, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #FF6B00, #FFA800);
+            border-radius: 6px;
+            width: 25%;
+            transition: width 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .progress-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            padding-top: 30px;
+        }
+        
+        .progress-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid rgba(255, 153, 0, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-step.active::before {
+            background: #FF6B00;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+            border-color: #FF6B00;
+        }
+        
+        .progress-step.completed::before {
+            background: #4caf50;
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            border-color: #4caf50;
+        }
+        
+        .step-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 153, 0, 0.3);
+            animation: slideInRight 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #FF6B00, #FFA800);
+        }
+        
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .step-title i {
+            font-size: 2rem;
+            color: #FF6B00;
+            background: rgba(255, 153, 0, 0.1);
+            padding: 15px;
+            border-radius: 50%;
+        }
+        
+        .step-title h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            color: #FF6B00;
+            font-weight: 600;
+        }
+        
+        .step-description {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 153, 0, 0.08);
+            border-left: 4px solid #FF6B00;
+            border-radius: 0 8px 8px 0;
+            animation: fadeIn 1s ease;
+            color: #555;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            background: rgba(255, 153, 0, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 153, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+        }
+        
+        .input-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            border-color: #FF6B00;
+        }
+        
+        .brawler-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            opacity: 0.7;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .rarity-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .price-info {
+            font-size: 0.9rem;
+            color: #FF6B00;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            border-radius: 8px;
+            color: #333;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #FF6B00;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.2);
+            background: white;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 15px 30px;
+            background: rgba(255, 153, 0, 0.1);
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 153, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-btn.next {
+            background: linear-gradient(to right, #FF6B00, #FFA800);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .result {
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+        
+        .result-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            color: #FF6B00;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .value-box {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .value-box:hover {
+            transform: scale(1.05);
+            border-color: #FF6B00;
+            box-shadow: 0 5px 20px rgba(255, 107, 0, 0.2);
+        }
+        
+        .value-title {
+            font-size: 1.3rem;
+            color: #FF6B00;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .value-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .gems {
+            color: #FF6B00;
+        }
+        
+        .dollars {
+            color: #27AE60;
+        }
+        
+        .rubles {
+            color: #2980B9;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .social-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-10px);
+        }
+        
+        .social-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 153, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover .social-icon {
+            background: #FF6B00;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+        }
+        
+        .social-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .author {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #FF6B00;
+            animation: fadeIn 1s ease;
+        }
+        
+        .author strong {
+            font-size: 1.4rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0 20px;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 153, 0, 0.3);
+            animation: fadeIn 1s ease;
+        }
+        
+        .disclaimer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+            line-height: 1.6;
+            padding: 15px;
+            background: rgba(255, 153, 0, 0.05);
+            border-radius: 10px;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .step-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .exchange-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .exchange-rate-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="images/logo.png" alt="Brawl Stars Logo">
+            </div>
+            <h1>Калькулятор стоимости аккаунта Brawl Stars</h1>
+            <p class="subtitle">Рассчитайте стоимость вашего аккаунта в несколько простых шагов. Узнайте, сколько стоит ваша коллекция бойцов, скинов и других предметов!</p>
+        </header>
+        
+        <div class="exchange-container">
+            <div class="exchange-rate-box">
+                <div class="exchange-title">Курс гемов к доллару</div>
+                <div class="exchange-value">30 гемов = $1.99</div>
+                <div class="rate-update">(официальный курс)</div>
+            </div>
+            
+            <div class="exchange-rate-box">
+                <div class="exchange-title">Введите курс доллара</div>
+                <div class="rate-input-container">
+                    <span>1$ =</span>
+                    <input type="number" min="1" step="0.01" id="dollar-rate-input" value="90.00">
+                    <span>₽</span>
+                </div>
+                <div class="rate-update">(актуальный курс на сегодня)</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" id="step1-indicator"><span>Бойцы</span></div>
+                <div class="progress-step" id="step2-indicator"><span>Скины</span></div>
+                <div class="progress-step" id="step3-indicator"><span>Значки и Спреи</span></div>
+                <div class="progress-step" id="step4-indicator"><span>Результат</span></div>
+            </div>
+        </div>
+        
+        <!-- Шаг 1: Бойцы -->
+        <div class="step-container" id="step1" style="display: block;">
+            <div class="step-title">
+                <i class="fas fa-user-ninja"></i>
+                <h2>Шаг 1: Ваши бойцы</h2>
+            </div>
+            
+            <div class="step-description">
+                <p>Укажите количество бойцов каждой редкости. Помните:</p>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li>Редкие: <span style="color: #FF6B00;">29 гемов</span> за бойца</li>
+                    <li>Сверхредкие: <span style="color: #FF6B00;">79 гемов</span> за бойца</li>
+                    <li>Эпические: <span style="color: #FF6B00;">169 гемов</span> за бойца</li>
+                    <li>Мифические: <span style="color: #FF6B00;">349 гемов</span> за бойца</li>
+                    <li>Легендарные: <span style="color: #FF6B00;">699 гемов</span> за бойца</li>
+                    <li>Ультралегендарные: <span style="color: #FF6B00;">999 гемов</span> за бойца</li>
+                </ul>
+            </div>
+            
+            <div class="calculator-grid">
+                <div class="input-group">
+                    <img src="images/rare_brawler.png" class="brawler-icon" alt="Редкий боец">
+                    <label>
+                        <span class="rarity-color" style="background: #00ff00;"></span>
+                        Редкие бойцы
+                    </label>
+                    <span class="price-info">29 гемов за бойца</span>
+                    <input type="number" min="0" id="rare-brawlers" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/super_rare_brawler.png" class="brawler-icon" alt="Сверхредкий боец">
+                    <label>
+                        <span class="rarity-color" style="background: #0000ff;"></span>
+                        Сверхредкие
+                    </label>
+                    <span class="price-info">79 гемов за бойца</span>
+                    <input type="number" min="0" id="super-rare-brawlers" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/epic_brawler.png" class="brawler-icon" alt="Эпический боец">
+                    <label>
+                        <span class="rarity-color" style="background: #cc00cc;"></span>
+                        Эпические
+                    </label>
+                    <span class="price-info">169 гемов за бойца</span>
+                    <input type="number" min="0" id="epic-brawlers" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/mythic_brawler.png" class="brawler-icon" alt="Мифический боец">
+                    <label>
+                        <span class="rarity-color" style="background: #ff7700;"></span>
+                        Мифические
+                    </label>
+                    <span class="price-info">349 гемов за бойца</span>
+                    <input type="number" min="0" id="mythic-brawlers" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/legendary_brawler.png" class="brawler-icon" alt="Легендарный боец">
+                    <label>
+                        <span class="rarity-color" style="background: #ffcc00;"></span>
+                        Легендарные
+                    </label>
+                    <span class="price-info">699 гемов за бойца</span>
+                    <input type="number" min="0" id="legendary-brawlers" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/ultra_legendary_brawler.png" class="brawler-icon" alt="Ультралегендарный боец">
+                    <label>
+                        <span class="rarity-color" style="background: #ff0000;"></span>
+                        Ультралегендарные
+                    </label>
+                    <span class="price-info">999 гемов за бойца</span>
+                    <input type="number" min="0" id="ultra-legendary-brawlers" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="nav-btn next" onclick="showStep(2)">
+                    Далее: Скины <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Шаг 2: Скины -->
+        <div class="step-container" id="step2" style="display: none;">
+            <div class="step-title">
+                <i class="fas fa-tshirt"></i>
+                <h2>Шаг 2: Ваши скины</h2>
+            </div>
+            
+            <div class="step-description">
+                <p>Укажите количество скинов каждой редкости. Цены за один скин:</p>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li>Редкие: <span style="color: #FF6B00;">29 гемов</span></li>
+                    <li>Сверхредкие: <span style="color: #FF6B00;">79 гемов</span></li>
+                    <li>Эпические: <span style="color: #FF6B00;">149 гемов</span></li>
+                    <li>Мифические: <span style="color: #FF6B00;">199 гемов</span></li>
+                    <li>Легендарные: <span style="color: #FF6B00;">299 гемов</span></li>
+                    <li>Гиперзарядные: <span style="color: #FF6B00;">499 гемов</span></li>
+                    <li>Серебрянные: <span style="color: #FF6B00;">1000 гемов</span></li>
+                    <li>Золотые: <span style="color: #FF6B00;">2500 гемов</span></li>
+                </ul>
+            </div>
+            
+            <div class="calculator-grid">
+                <div class="input-group">
+                    <img src="images/rare_skin.png" class="brawler-icon" alt="Редкий скин">
+                    <label>
+                        <span class="rarity-color" style="background: #00ff00;"></span>
+                        Редкие скины
+                    </label>
+                    <span class="price-info">29 гемов за скин</span>
+                    <input type="number" min="0" id="rare-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/super_rare_skin.png" class="brawler-icon" alt="Сверхредкий скин">
+                    <label>
+                        <span class="rarity-color" style="background: #0000ff;"></span>
+                        Сверхредкие скины
+                    </label>
+                    <span class="price-info">79 гемов за скин</span>
+                    <input type="number" min="0" id="super-rare-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/epic_skin.png" class="brawler-icon" alt="Эпический скин">
+                    <label>
+                        <span class="rarity-color" style="background: #cc00cc;"></span>
+                        Эпические скины
+                    </label>
+                    <span class="price-info">149 гемов за скин</span>
+                    <input type="number" min="0" id="epic-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/mythic_skin.png" class="brawler-icon" alt="Мифический скин">
+                    <label>
+                        <span class="rarity-color" style="background: #ff7700;"></span>
+                        Мифические скины
+                    </label>
+                    <span class="price-info">199 гемов за скин</span>
+                    <input type="number" min="0" id="mythic-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/legendary_skin.png" class="brawler-icon" alt="Легендарный скин">
+                    <label>
+                        <span class="rarity-color" style="background: #ffcc00;"></span>
+                        Легендарные скины
+                    </label>
+                    <span class="price-info">299 гемов за скин</span>
+                    <input type="number" min="0" id="legendary-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/hypercharge_skin.png" class="brawler-icon" alt="Гиперзарядный скин">
+                    <label>
+                        <span class="rarity-color" style="background: #ff00ff;"></span>
+                        Гиперзарядные скины
+                    </label>
+                    <span class="price-info">499 гемов за скин</span>
+                    <input type="number" min="0" id="hypercharge-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/silver_skin.png" class="brawler-icon" alt="Серебрянный скин">
+                    <label>
+                        <span class="rarity-color" style="background: #c0c0c0;"></span>
+                        Серебрянные скины
+                    </label>
+                    <span class="price-info">1000 гемов за скин</span>
+                    <input type="number" min="0" id="silver-skins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/gold_skin.png" class="brawler-icon" alt="Золотой скин">
+                    <label>
+                        <span class="rarity-color" style="background: #ffd700;"></span>
+                        Золотые скины
+                    </label>
+                    <span class="price-info">2500 гемов за скин</span>
+                    <input type="number" min="0" id="gold-skins" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="nav-btn" onclick="showStep(1)">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <button class="nav-btn next" onclick="showStep(3)">
+                    Далее: Значки <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Шаг 3: Значки и Спреи -->
+        <div class="step-container" id="step3" style="display: none;">
+            <div class="step-title">
+                <i class="fas fa-medal"></i>
+                <h2>Шаг 3: Значки и спреи</h2>
+            </div>
+            
+            <div class="step-description">
+                <p>Укажите количество значков и спреев. Цены:</p>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li>Обычные значки: <span style="color: #FF6B00;">9 гемов</span> за штуку</li>
+                    <li>Редкие значки: <span style="color: #FF6B00;">19 гемов</span> за штуку</li>
+                    <li>Эпические значки: <span style="color: #FF6B00;">39 гемов</span> за штуку</li>
+                    <li>Уникальные значки: <span style="color: #FF6B00;">39 гемов</span> за штуку</li>
+                    <li>Спреи: <span style="color: #FF6B00;">29 гемов</span> за спрей</li>
+                </ul>
+            </div>
+            
+            <div class="calculator-grid">
+                <div class="input-group">
+                    <img src="images/common_pin.png" class="brawler-icon" alt="Обычный значок">
+                    <label>
+                        <span class="rarity-color" style="background: #ffffff;"></span>
+                        Обычные значки
+                    </label>
+                    <span class="price-info">9 гемов за значок</span>
+                    <input type="number" min="0" id="common-pins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/rare_pin.png" class="brawler-icon" alt="Редкий значок">
+                    <label>
+                        <span class="rarity-color" style="background: #00ff00;"></span>
+                        Редкие значки
+                    </label>
+                    <span class="price-info">19 гемов за значок</span>
+                    <input type="number" min="0" id="rare-pins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/epic_pin.png" class="brawler-icon" alt="Эпический значок">
+                    <label>
+                        <span class="rarity-color" style="background: #cc00cc;"></span>
+                        Эпические значки
+                    </label>
+                    <span class="price-info">39 гемов за значок</span>
+                    <input type="number" min="0" id="epic-pins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/unique_pin.png" class="brawler-icon" alt="Уникальный значок">
+                    <label>
+                        <span class="rarity-color" style="background: #ff00ff;"></span>
+                        Уникальные значки
+                    </label>
+                    <span class="price-info">39 гемов за значок</span>
+                    <input type="number" min="0" id="unique-pins" placeholder="0">
+                </div>
+                
+                <div class="input-group">
+                    <img src="images/spray.png" class="brawler-icon" alt="Спрей">
+                    <label>
+                        <span class="rarity-color" style="background: #00ffff;"></span>
+                        Спреи
+                    </label>
+                    <span class="price-info">29 гемов за спрей</span>
+                    <input type="number" min="0" id="sprays" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="nav-btn" onclick="showStep(2)">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <button class="nav-btn next" onclick="calculateTotal(); showStep(4);">
+                    Посчитать стоимость <i class="fas fa-calculator"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Шаг 4: Результат -->
+        <div class="step-container" id="step4" style="display: none;">
+            <div class="result">
+                <h2 class="result-title">Результаты расчета</h2>
+                <p>Вот примерная стоимость вашего аккаунта в Brawl Stars:</p>
+                
+                <div class="result-values">
+                    <div class="value-box">
+                        <div class="value-title">Общая стоимость в гемах</div>
+                        <div class="value-amount gems" id="total-gems">0 гемов</div>
+                    </div>
+                    
+                    <div class="value-box">
+                        <div class="value-title">Стоимость в долларах</div>
+                        <div class="value-amount dollars" id="total-dollars">$0.00</div>
+                    </div>
+                    
+                    <div class="value-box">
+                        <div class="value-title">Стоимость в рублях</div>
+                        <div class="value-amount rubles" id="total-rubles">0 ₽</div>
+                    </div>
+                </div>
+                
+                <div class="author">
+                    <p>Создатель калькулятора: <strong>Ali-GG</strong></p>
+                </div>
+                
+                <div class="social-links">
+                    <a href="https://youtube.com/@ali-gg?si=sZW6ASYVtHS5Qo7U" class="social-link" target="_blank">
+                        <div class="social-icon" style="color: #ff0000;">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <span class="social-text">YouTube</span>
+                    </a>
+                    
+                    <a href="https://www.tiktok.com/@ali_goodgaming?_t=ZS-8y3bsJF28cy&_r=1" class="social-link" target="_blank">
+                        <div class="social-icon" style="color: #000000;">
+                            <i class="fab fa-tiktok"></i>
+                        </div>
+                        <span class="social-text">TikTok</span>
+                    </a>
+                    
+                    <a href="https://t.me/aligoodgaming" class="social-link" target="_blank">
+                        <div class="social-icon" style="color: #0088cc;">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <span class="social-text">Telegram</span>
+                    </a>
+                </div>
+                
+                <div class="buttons">
+                    <button class="nav-btn" onclick="showStep(1)">
+                        <i class="fas fa-redo"></i> Начать заново
+                    </button>
+                </div>
+                
+                <div class="disclaimer">
+                    <p><strong>Примечание:</strong> Данный расчет является приблизительной оценкой стоимости аккаунта. Фактическая стоимость может отличаться в зависимости от рыночных условий и других факторов. Курс гемов фиксированный: 30 гемов = 1.99$. Курс доллара указан пользователем.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Brawl Stars Account Calculator © <span id="current-year"></span> | Все права на игру Brawl Stars принадлежат Supercell</p>
+            <p>Этот инструмент создан для образовательных целей | Автор: Ali-GG</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Установить текущий год в футере
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+        
+        // Показываем текущий шаг
+        function showStep(stepNumber) {
+            // Скрыть все шаги
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'none';
+            
+            // Показать выбранный шаг
+            document.getElementById('step' + stepNumber).style.display = 'block';
+            
+            // Обновить прогресс бар
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercent = (stepNumber / 4) * 100;
+            progressFill.style.width = progressPercent + '%';
+            
+            // Обновить индикаторы шагов
+            const indicators = document.querySelectorAll('.progress-step');
+            indicators.forEach((indicator, index) => {
+                indicator.classList.remove('active', 'completed');
+                
+                if (index + 1 < stepNumber) {
+                    indicator.classList.add('completed');
+                } else if (index + 1 === stepNumber) {
+                    indicator.classList.add('active');
+                }
+            });
+            
+            // Прокрутить к началу контейнера
+            document.querySelector('.step-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Цены в гемах
+        const prices = {
+            // Бойцы
+            brawlers: {
+                rare: 29,
+                superRare: 79,
+                epic: 169,
+                mythic: 349,
+                legendary: 699,
+                ultraLegendary: 999
+            },
+            
+            // Скины
+            skins: {
+                rare: 29,
+                superRare: 79,
+                epic: 149,
+                mythic: 199,
+                legendary: 299,
+                hypercharge: 499,
+                silver: 1000,
+                gold: 2500
+            },
+            
+            // Значки
+            pins: {
+                common: 9,
+                rare: 19,
+                epic: 39,
+                unique: 39
+            },
+            
+            // Спреи
+            sprays: 29
+        };
+        
+        // Курсы
+        const gemsToDollars = 1.99 / 30; // $ за 1 гем
+        
+        // Расчет общей стоимости
+        function calculateTotal() {
+            // Получаем курс доллара, введенный пользователем
+            const dollarRate = parseFloat(document.getElementById('dollar-rate-input').value) || 90;
+            
+            let totalGems = 0;
+            
+            // Расчет стоимости бойцов
+            totalGems += parseInt(document.getElementById('rare-brawlers').value || 0) * prices.brawlers.rare;
+            totalGems += parseInt(document.getElementById('super-rare-brawlers').value || 0) * prices.brawlers.superRare;
+            totalGems += parseInt(document.getElementById('epic-brawlers').value || 0) * prices.brawlers.epic;
+            totalGems += parseInt(document.getElementById('mythic-brawlers').value || 0) * prices.brawlers.mythic;
+            totalGems += parseInt(document.getElementById('legendary-brawlers').value || 0) * prices.brawlers.legendary;
+            totalGems += parseInt(document.getElementById('ultra-legendary-brawlers').value || 0) * prices.brawlers.ultraLegendary;
+            
+            // Расчет стоимости скинов
+            totalGems += parseInt(document.getElementById('rare-skins').value || 0) * prices.skins.rare;
+            totalGems += parseInt(document.getElementById('super-rare-skins').value || 0) * prices.skins.superRare;
+            totalGems += parseInt(document.getElementById('epic-skins').value || 0) * prices.skins.epic;
+            totalGems += parseInt(document.getElementById('mythic-skins').value || 0) * prices.skins.mythic;
+            totalGems += parseInt(document.getElementById('legendary-skins').value || 0) * prices.skins.legendary;
+            totalGems += parseInt(document.getElementById('hypercharge-skins').value || 0) * prices.skins.hypercharge;
+            totalGems += parseInt(document.getElementById('silver-skins').value || 0) * prices.skins.silver;
+            totalGems += parseInt(document.getElementById('gold-skins').value || 0) * prices.skins.gold;
+            
+            // Расчет стоимости значков
+            totalGems += parseInt(document.getElementById('common-pins').value || 0) * prices.pins.common;
+            totalGems += parseInt(document.getElementById('rare-pins').value || 0) * prices.pins.rare;
+            totalGems += parseInt(document.getElementById('epic-pins').value || 0) * prices.pins.epic;
+            totalGems += parseInt(document.getElementById('unique-pins').value || 0) * prices.pins.unique;
+            
+            // Расчет стоимости спреев
+            totalGems += parseInt(document.getElementById('sprays').value || 0) * prices.sprays;
+            
+            // Преобразование в доллары и рубли
+            const totalDollars = totalGems * gemsToDollars;
+            const totalRubles = totalDollars * dollarRate;
+            
+            // Отображение результатов
+            document.getElementById('total-gems').textContent = totalGems.toLocaleString('ru-RU') + ' гемов';
+            document.getElementById('total-dollars').textContent = '$' + totalDollars.toFixed(2);
+            document.getElementById('total-rubles').textContent = totalRubles.toLocaleString('ru-RU', {maximumFractionDigits: 0}) + ' ₽';
+        }
+        
+        // Добавляем анимацию при фокусе на полях ввода
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.05)';
+                this.parentElement.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+                this.parentElement.style.borderColor = '#FF6B00';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+                this.parentElement.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.08)';
+                this.parentElement.style.borderColor = 'rgba(255, 153, 0, 0.2)';
+            });
+        });
+    </script>
+</body>
+</html>
